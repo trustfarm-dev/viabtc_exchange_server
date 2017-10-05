@@ -33,6 +33,7 @@ static void on_job(nw_job_entry *entry, void *privdata)
     CURL *curl = curl_easy_init();
     sds reply = sdsempty();
     sds token = sdsempty();
+    // trustfarm.comments:: reply, token needs to check NULL or context allocated.
     struct curl_slist *chunk = NULL;
     token = sdscatprintf(token, "Authorization: %s", (sds)entry->request);
     chunk = curl_slist_append(chunk, token);
@@ -45,6 +46,8 @@ static void on_job(nw_job_entry *entry, void *privdata)
     curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, (long)(settings.backend_timeout * 1000));
 
+    // trustfarm.comments:: 
+    // entry->reply = NULL; /* for initialize for retrun context */
     CURLcode ret = curl_easy_perform(curl);
     if (ret != CURLE_OK) {
         log_fatal("curl_easy_perform fail: %s", curl_easy_strerror(ret));
@@ -52,6 +55,7 @@ static void on_job(nw_job_entry *entry, void *privdata)
     }
 
     json_t *result = json_loads(reply, 0, NULL);
+    
     if (result == NULL)
         goto cleanup;
     entry->reply = result;
