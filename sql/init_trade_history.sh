@@ -5,7 +5,7 @@ MYSQL_USER="root"
 MYSQL_PASS="shit"
 MYSQL_DB="trade_history"
 
-for i in `seq 0 99`
+for i in `seq 0 99`   # <-- why is it bound to 99 , I think there's over the hundress of coins exists. It'wll changed in future, how about runtime table creation when another balance required.
 do
     echo "create table balance_history_$i"
     mysql -h$MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASS $MYSQL_DB -e "CREATE TABLE balance_history_$i LIKE balance_history_example;"
